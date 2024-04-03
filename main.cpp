@@ -3,17 +3,23 @@
 extern string name , role;
 
 int main(){
-    string lesson_name = "ap";
-    string teacher_name = "Nicknaddaf";
-    string student_name = "Hadis Bakhshipoor";
-    string student_taklif = "taklif1";
 
-    student daneshjo;
-    // daneshjo.read_grade_from_file(lesson_name, teacher_name, student_name);
     login();
-    cout << role << endl;
-   
+    if(role == "student"){
+        student daneshjo;
+    
+    // daneshjo.read_grade_from_file(name);
+    // daneshjo.read_homework_from_file(name);
 
-    // daneshjo.read_takalif_from_file(lesson_name, teacher_name, student_name, student_taklif);
+    } else if(role == "teacher"){
+        teacher master;
+
+        // master.creat_new_file_for_grade(name);
+        // master.creat_new_file_for_homework(name);
+  
+
+    }
+    
+
 
 }

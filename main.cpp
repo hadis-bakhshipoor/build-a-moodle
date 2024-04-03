@@ -16,8 +16,8 @@ int main(){
 
         // master.creat_new_file_for_grade(name);
         // master.creat_new_file_for_homework(name);
-  
-
+        // master.add_grade(name);
+        master.remove_student(name);
     }
     
 

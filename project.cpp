@@ -45,104 +45,63 @@ void login() {
     delete []login_request_array;
 }
 
+std::filesystem::path student::homework_or_final(string teacher_name) {
+
+    string lesson_name, homework_final, homework_num, file_name;
+
+    cout << "please enter lesson name\t";
+    cin >> lesson_name;
+    cout<<"Do you want to enter the homework grade or the final grade?\n(homework or final)\t";
+    cin >> homework_final;
+
+    if(homework_final == "homework") {
+        cout << "Which homework do you want to grade?\t" ;
+        cin >> homework_num;
+
+        file_name = lesson_name + "_" + teacher_name + "_" + homework_final + homework_num + ".txt";
+        homework_final = "homeworks";
+    }
+    else if(homework_final == "final") {
+        file_name = lesson_name + "_" + teacher_name + ".txt";
+        homework_final = "final";
+    }
+    else cout << "Your answer is wrong (enter: homework or final)\n";
+
+    std::filesystem::path cwd = std::filesystem::current_path();
+    std::filesystem::path file_path = cwd / homework_final / file_name;
+
+    return file_path;
+
+}
+
 void student::read_grade_from_file(string student_name) {
 
     string student_full_name = "nothing";
-    string file_name, student_grade;
+    string teacher_name, student_grade;
 
-    string lesson_name, teacher_name;
-    cout << "Please enter the name of lessone\n";
-    cin >> lesson_name;
-    cout << "Please enter the name of teacher\n";
+    cout << "Please enter the teacher last name.\t";
     cin >> teacher_name;
-
-    std::filesystem::path cwd = std::filesystem::current_path();
-    file_name = lesson_name + "_" + teacher_name + ".txt";
-    std::filesystem::path file_path = cwd / "final" / file_name;
+    std::filesystem::path file_path = homework_or_final(teacher_name);
     
     ifstream file(file_path, ios::in);
-    if(!file) cout<<"your lesson name or teacher name is wrong";
+    if(!file) cout<<"Your lesson name or teacher name is wrong!\n";
 
     while(!file.eof()) {
         string name, last_name;
         file >> name >> last_name >> student_grade;
         student_full_name = name + " " + last_name; 
 
-        if(student_full_name == (student_name + ":")) {
+        if(student_full_name == student_name) {
             cout << student_name << ", your grade is: " << student_grade;
             break;
         }   
     }
 
-    if(student_full_name != (student_name + ":"))
+    if(student_full_name != student_name)
         cout<<"Your name is wrong or your name dose not found";
 
 }
 
-void student::read_homework_from_file(string student_name) {
-    
-    string lesson_name, teacher_name, number_of_homework;
-    cout << "Please enter the name of lessone\n";
-    cin >> lesson_name;
-    cout << "Please enter the name of teacher\n";
-    cin >> teacher_name;
-    cout << "Please enter the number of homework\n";
-    cin >> number_of_homework;
-
-    string student_full_name = "nothing";
-    string file_name, student_grade;
-
-    std::filesystem::path cwd = std::filesystem::current_path();
-    file_name = lesson_name + "_" + teacher_name + "_" + "homework" + number_of_homework + ".txt";
-    std::filesystem::path file_path = cwd / "homeworks" / file_name;
-
-    ifstream file(file_path, ios::in);
-    if(!file) cout<<"your lesson name or teacher name is wrong";
-
-    while(!file.eof()) {
-        string name, last_name;
-        file >> name >> last_name >> student_grade;
-        student_full_name = name + " " + last_name; 
-
-        if(student_full_name == (student_name + ":")) {
-            cout << student_name << ", your grade for: " << number_of_homework << " is: "<< student_grade;
-            break;
-        }   
-    }
-
-    if(student_full_name != (student_name + ":"))
-        cout<<"Your name is wrong or your name dose not found";
-}
-
-
-std::filesystem::path teacher::homework_of_final(string teacher_name) {
-
-    string lesson_name, homework_or_final, homework_num, file_name;
-
-    cout << "please enter lesson name\t";
-    cin >> lesson_name;
-    cout<<"Do you want to enter the homework grade or the final grade?\n(homework or final)\t";
-    cin >> homework_or_final;
-
-    if(homework_or_final == "homework") {
-        cout << "Which homework do you want to grade?\t" ;
-        cin >> homework_num;
-
-        file_name = lesson_name + "_" + teacher_name + "_" + homework_or_final + homework_num + ".txt";
-        homework_or_final = "homeworks";
-    }
-    else if(homework_or_final == "final") {
-        file_name = lesson_name + "_" + teacher_name + ".txt";
-        homework_or_final = "final";
-    }
-    else cout << "Your answer is wrong (enter: homework or final)\n";
-
-    std::filesystem::path cwd = std::filesystem::current_path();
-    std::filesystem::path file_path = cwd / homework_or_final / file_name;
-
-    return file_path;
-
-}
 
 int teacher::open_file(std::filesystem::path file_path) {
     ifstream file(file_path, ios::in);
@@ -166,7 +125,7 @@ void teacher::creat_new_file_for_grade(string teacher_name) {
     std::filesystem::path file_path = cwd / "final" / file_name;
     ofstream file_grade(file_path);
 
-    cout << "Please enter number of students\n";
+    cout << "Please enter number of students\t";
     cin >> num_of_students;
     student_mark_array = new student_and_grade[num_of_students];
 
@@ -215,7 +174,7 @@ void teacher::creat_new_file_for_homework(string teacher_name) {
 
 void teacher::add_grade(string teacher_name) {
 
-    std::filesystem::path file_path = homework_of_final(teacher_name);
+    std::filesystem::path file_path = homework_or_final(teacher_name);
 
     num_of_students = open_file(file_path);
     student_mark_array = new student_and_grade[num_of_students];
@@ -269,7 +228,7 @@ void teacher::remove_student(string teacher_name) {
         for(int i=0; i<num_of_students-1; i++) {
             string fullname = student_mark_array[i].name_of_student + " " + student_mark_array[i].last_name_of_student;
 
-                if(fullname == name_student + ":") {j=i+1;}
+                if(fullname == name_student) {j=i+1;}
 
             student_mark_array[i].name_of_student      = student_mark_array[j].name_of_student;
             student_mark_array[i].last_name_of_student = student_mark_array[j].last_name_of_student;
@@ -327,9 +286,9 @@ void admin::update_grade() {
 
     string student_name, teacher_name, right_grade;
 
-    cout << "please enter teacher name\t";
+    cout << "please enter teacher last name\t";
     cin >> teacher_name;
-    std::filesystem::path file_path = homework_of_final(teacher_name);
+    std::filesystem::path file_path = homework_or_final(teacher_name);
 
     cout << "please enter student name\t";
     cin.ignore();
@@ -342,13 +301,18 @@ void admin::update_grade() {
     ifstream file(file_path, ios::in);
     if(!file) cout<<"Your lesson name or teacher name is wrong";
     else{
+        bool flag = 0;
         for(int i=0; i<num_of_students; i++) {
             file >> student_mark_array[i].name_of_student >> student_mark_array[i].last_name_of_student >> student_mark_array[i].grade;
 
             string fullname = student_mark_array[i].name_of_student + " " + student_mark_array[i].last_name_of_student;
-            if(fullname == student_name + ":") student_mark_array[i].grade = stof(right_grade);
-            else cout << "Your student name you entered is incorrect! \n";
+            if(fullname == student_name){ 
+                student_mark_array[i].grade = stof(right_grade); 
+                flag = 1;
+            }
         }
+
+        if(flag == 0 ) cout << "Your student name you entered is incorrect! \n";
 
         file.close();
         ofstream file_(file_path);
@@ -382,14 +346,18 @@ void admin::delete_account() {
     login_request_array = new login_request[num_of_users];
 
     ifstream file_login("login_file.txt", ios::in);
+    bool flag = 0;
     for(int i=0; i<num_of_users; i++) {
         file_login >> login_request_array[i].name_login >> login_request_array[i].last_name_login >> login_request_array[i].role_login;
 
         if((login_request_array[i].name_login + login_request_array[i].last_name_login + login_request_array[i].role_login) 
-            == name_person + last_name_person + role_person)
-               login_request_array[i].name_login = "*" + login_request_array[i].name_login; 
-        else cout << "The first name, last name, or role you entered does not exist in the list of people, please check again\n";
+            == name_person + last_name_person + role_person) {
+                login_request_array[i].name_login = "*" + login_request_array[i].name_login; 
+                flag = 1;
+            }
     }
+
+    if(flag == 0) cout << "The first name, last name, or role you entered does not exist in the list of people, please check again\n";
 
     file_login.close();
     ofstream file_login__("login_file.txt");
@@ -422,14 +390,17 @@ void admin::restore_account() {
     login_request_array = new login_request[num_of_users];
 
     ifstream file_login("login_file.txt", ios::in);
+    bool flag = 0;
     for(int i=0; i<num_of_users; i++) {
         file_login >> login_request_array[i].name_login >> login_request_array[i].last_name_login >> login_request_array[i].role_login;
 
         if((login_request_array[i].name_login + login_request_array[i].last_name_login + login_request_array[i].role_login) 
-            == ("*" + name_person + last_name_person + role_person))
+            == ("*" + name_person + last_name_person + role_person)){
                 login_request_array[i].name_login = name_person;
-        else cout << "The first name, last name, or role you entered does not exist in the list of people, please check again\n";         
+                flag = 1;
+            }
     }
+    if(flag == 0) cout << "The first name, last name, or role you entered does not exist in the list of people, please check again\n";
 
     file_login.close();
     ofstream file_login__("login_file.txt");

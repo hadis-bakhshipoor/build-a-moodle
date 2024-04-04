@@ -9,23 +9,14 @@ int main(){
     login();
     if(role == "student"){
         student daneshjo;
-        cout << "press number 1 to see the final grade \npress number 2 to see the homework grade\n";
-        cin >> choice;
 
-        switch (choice) {
-        case 1:
-            daneshjo.read_grade_from_file(name + " " + lastname);
-            break;
-        case 2:
-            daneshjo.read_homework_from_file(name + " " + lastname);
-            break;
-        default: cout << "Your answer is wrong!";
-        }
+        cout << "You are logged in as a student. You can only see the final score or your practice, to see your score...\n";
+        daneshjo.read_grade_from_file(name + " " + lastname);
 
     } else if(role == "teacher"){
         teacher master;
         cout << "Press \n1 to create a new lesson, \n2 to create a new assignment, \n3 to add a grade,";
-        cout << "\n4 to delete a student, \n5 to see the student's final grade, \n6 to see the student's assignment grade.\n";
+        cout << "\n4 to delete a student, \n5 to see the student's grade.\n";
         cin >> choice;
         switch (choice) {
         case 1:
@@ -46,12 +37,6 @@ int main(){
             getline(cin ,full_name);
             master.read_grade_from_file(full_name);
             break;
-        case 6:
-            cout << "the full name of student:\n";
-            cin.ignore();
-            getline(cin ,full_name);
-            master.read_homework_from_file(full_name);
-            break;
         default: cout << "Your answer is wrong!"; }
     }
 
@@ -60,8 +45,7 @@ int main(){
         cout << "press number 1 to delete the lesson, \npress number 2 to update the score,\n";
         cout << "press number 3 to delete the account, \npress number 4 to restore the deleted account.\n";
         cout << "press number 5 to create a new lesson, \npress number 6 to create a new assignment, \npress number 7 to add a grade,\n"; 
-        cout << "press number 8 to delete a student, \npress number 9 to see the student's final grade,\n";
-        cout << "press number 10 to see the student's assignment grade.\n";
+        cout << "press number 8 to delete a student, \npress number 9 to see the student's grade,\n";
         cin >> choice;
 
         switch (choice) {
@@ -106,12 +90,6 @@ int main(){
             cin.ignore();
             getline(cin ,full_name);
             manager.read_grade_from_file(full_name);
-            break;
-        case 10:
-            cout << "the full name of student:\n";
-            cin.ignore();
-            getline(cin ,full_name);
-            manager.read_homework_from_file(full_name);
             break;
         default: cout << "Your answer is wrong!"; }
     }

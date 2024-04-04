@@ -8,8 +8,8 @@ using namespace std;
 
 class student {
     public:
+        std::filesystem::path homework_or_final(string teacher_name);
         void read_grade_from_file(string student_name);
-        void read_homework_from_file(string student_name);
 
 };
 
@@ -24,7 +24,6 @@ class teacher: public student {
         student_and_grade* student_mark_array;
    
     public: 
-        std::filesystem::path homework_of_final(string teacher_name);
         int open_file(std::filesystem::path file_path);
 
         void creat_new_file_for_grade(string teacher_name);

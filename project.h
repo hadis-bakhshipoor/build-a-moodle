@@ -13,7 +13,7 @@ class student {
 
 };
 
-class teacher: public student{
+class teacher: public student {
     protected:
         int num_of_students;
         struct student_and_grade {
@@ -24,11 +24,19 @@ class teacher: public student{
         student_and_grade* student_mark_array;
    
     public: 
+        std::filesystem::path homework_of_final(string teacher_name);
+
         void creat_new_file_for_grade(string teacher_name);
         void creat_new_file_for_homework(string teacher_name);
         void add_grade(string teacher_name);
         void remove_student(string teacher_name);
 
+};
+
+class admin: public teacher {
+    public:
+        void delete_lesson();
+        void update_grade();
 };
 
 void login();

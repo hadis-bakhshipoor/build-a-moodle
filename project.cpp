@@ -58,7 +58,7 @@ void student::read_homework_from_file(string student_name) {
     string file_name, student_grade;
 
     std::filesystem::path cwd = std::filesystem::current_path();
-    file_name = lesson_name + "_" + "homework" + number_of_homework + "_" + teacher_name + ".txt";
+    file_name = lesson_name + "_" + teacher_name + "_" + "homework" + number_of_homework + ".txt";
     std::filesystem::path file_path = cwd / "homeworks" / file_name;
 
     ifstream file(file_path, ios::in);
@@ -77,6 +77,36 @@ void student::read_homework_from_file(string student_name) {
 
     if(student_full_name != (student_name + ":"))
         cout<<"Your name is wrong or your name dose not found";
+}
+
+
+std::filesystem::path teacher::homework_of_final(string teacher_name){
+
+    string lesson_name, homework_or_final, homework_num, file_name;
+
+    cout << "please enter lesson name\n";
+    cin >> lesson_name;
+    cout<<"Do you want to enter the homework grade or the final grade?\n(homework or final)\n";
+    cin >> homework_or_final;
+
+    if(homework_or_final == "homework") {
+        cout << "Which homework do you want to grade?\n" ;
+        cin >> homework_num;
+
+        file_name = lesson_name + "_" + teacher_name + "_" + homework_or_final + homework_num + ".txt";
+        homework_or_final = "homeworks";
+    }
+    else if(homework_or_final == "final") {
+        file_name = lesson_name + "_" + teacher_name + ".txt";
+        homework_or_final = "final";
+    }
+    else cout << "Your answer is wrong (enter: homework or final)\n";
+
+    std::filesystem::path cwd = std::filesystem::current_path();
+    std::filesystem::path file_path = cwd / homework_or_final / file_name;
+
+    return file_path;
+
 }
 
 void teacher::creat_new_file_for_grade(string teacher_name) {
@@ -119,7 +149,7 @@ void teacher::creat_new_file_for_homework(string teacher_name) {
     std::filesystem::path file_path_ = cwd / "final"     / file_name_;
     ifstream file_grade(file_path_, ios::in);
 
-    file_name  = lesson_name + "_" + "homework" + homework_num + "_" + teacher_name + ".txt";
+    file_name  = lesson_name + "_" + teacher_name + "_" + "homework" + homework_num + ".txt";
     std::filesystem::path file_path  = cwd / "homeworks" / file_name;
     ofstream file_homework(file_path);
 
@@ -144,30 +174,7 @@ void teacher::creat_new_file_for_homework(string teacher_name) {
 
 void teacher::add_grade(string teacher_name) {
 
-    string file_name, lesson_name, homework_num, homework_or_final;
-
-    cout << "Please enter your lesson to creat a file\n";
-    cin >> lesson_name;
-
-    cout<<"Do you want to enter the homework grade or the final grade?\n(homework or final)\n";
-    cin >> homework_or_final;
-
-    if(homework_or_final == "homework") {
-        cout << "Which homework do you want to grade?\n" ;
-        cin >> homework_num;
-
-
-        file_name = lesson_name + "_" + homework_or_final + homework_num + "_" + teacher_name + ".txt";
-        homework_or_final = "homeworks";
-    }
-    else if(homework_or_final == "final") {
-        file_name = lesson_name + "_" + teacher_name + ".txt";
-        homework_or_final = "final";
-    }
-    else cout << "Your answer is wrong (enter: homework or final)\n";
-
-    std::filesystem::path cwd = std::filesystem::current_path();
-    std::filesystem::path file_path = cwd / homework_or_final / file_name;
+    std::filesystem::path file_path = homework_of_final(teacher_name);
     ifstream file(file_path, ios::in);
 
     num_of_students = 0;
@@ -246,5 +253,86 @@ void teacher::remove_student(string teacher_name) {
 
     }
     file__.close();
+}
+
+void admin::delete_lesson() {
+
+    string file_name, lesson_name, homework_num, teacher_name;
+
+    cout << "Please enter your lesson to delete\n";
+    cin >> lesson_name;
+    cout << "Please enter your teacher name\n";
+    cin >> teacher_name;
+
+
+    std::filesystem::path cwd = std::filesystem::current_path();
+    file_name = lesson_name + "_" + teacher_name;
+    std::filesystem::path file_path_final    = cwd / "final";
+    std::filesystem::path file_path_homework = cwd / "homeworks";
+
+	namespace fs = std::filesystem;	
+    for (const auto& entry : fs::directory_iterator(file_path_final)) {
+    	if (entry.is_regular_file()) {
+       		std::string filename = entry.path().filename().string();
+        	if (filename.rfind(file_name, 0) == 0) {  
+            	fs::remove(entry.path()); 
+        	}
+    	}
+	}
+    for (const auto& entry : fs::directory_iterator(file_path_homework)) {
+    	if (entry.is_regular_file()) {
+       		std::string filename = entry.path().filename().string();
+        	if (filename.rfind(file_name, 0) == 0) {  
+            	fs::remove(entry.path()); 
+        	}
+    	}
+	}
+
+}
+
+void admin::update_grade() { 
+
+    string student_name, teacher_name, right_grade;
+
+    cout << "please enter student name\n";
+    cin.ignore();
+    getline(cin, student_name);
+    cout << "please enter teacher name\n";
+    cin >> teacher_name;
+    
+    std::filesystem::path file_path = homework_of_final(teacher_name);
+
+    cout << "please enter the right grade\n";
+    cin >> right_grade;
+
+
+
+    ifstream file(file_path, ios::in);
+
+    num_of_students = 0;
+    std::string line;
+    while(std::getline(file, line)) {
+        num_of_students++;
+    }
+    
+    file.close();
+    ifstream file_(file_path, ios::in);
+
+    student_mark_array = new student_and_grade[num_of_students];
+    for(int i=0; i<num_of_students; i++) {
+        file_ >> student_mark_array[i].name_of_student >> student_mark_array[i].last_name_of_student >> student_mark_array[i].grade;
+
+        string fullname = student_mark_array[i].name_of_student + " " + student_mark_array[i].last_name_of_student;
+        if(fullname == student_name + ":") student_mark_array[i].grade = stof(right_grade);
+    }
+
+    file_.close();
+    ofstream file__(file_path);
+    for(int i=0; i<num_of_students; i++) 
+        file__ << student_mark_array[i].name_of_student << " " << student_mark_array[i].last_name_of_student << 
+            " " << student_mark_array[i].grade << endl;
+
+    file__.close();
+
 }
 
